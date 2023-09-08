@@ -3,7 +3,6 @@ import 'package:meal_apps/providers/favorites_provider.dart';
 import 'package:meal_apps/screens/categories.dart';
 import 'package:meal_apps/screens/filters.dart';
 import 'package:meal_apps/widgets/main_drawer.dart';
-import "package:meal_apps/providers/meals_provider.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import '../providers/filters_provider.dart';
 import 'meals.dart';
@@ -39,28 +38,13 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final meals = ref.watch(mealsProvider);
-    final favoriteMeals = ref.watch(favoriteMealsProvider);
-    final selectedFilters = ref.watch(filterProvider);
-    final availableMeals = meals.where((meal) {
-      if (selectedFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
-        return false;
-      }
-      if (selectedFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
-        return false;
-      }
-      if (selectedFilters[Filter.vegeterian]! && !meal.isVegetarian) {
-        return false;
-      }
-      if (selectedFilters[Filter.vegan]! && !meal.isVegan) {
-        return false;
-      }
-      return true;
-    }).toList();
+    final availableMeals = ref.watch(filteredMealsProvider);
+
     Widget activePage = CategoriesScreen(
       availableMeals: availableMeals,
     );
     if (_selectedPageIndex == 1) {
+      final favoriteMeals = ref.watch(favoriteMealsProvider);
       activePage = MealsScreen(
         meals: favoriteMeals,
       );
